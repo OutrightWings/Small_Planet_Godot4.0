@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://cyf6jbbtcg6s2"
+path="res://.godot/imported/water_image.png-a495fa004c0a2cdc7c78b727315e8363.image"
+
+[deps]
+
+source_file="res://Resources/Textures/water_image.png"
+dest_files=["res://.godot/imported/water_image.png-a495fa004c0a2cdc7c78b727315e8363.image"]
+
+[params]
+

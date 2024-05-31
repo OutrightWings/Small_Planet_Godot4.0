@@ -1,0 +1,4 @@
+[gd_scene load_steps=18 format=2]
+
+[ext_resource path="res://Scripts/CameraController.cs" type="Script" id=1]
+[ext_resource path="res://meshground.tres" type="Arra

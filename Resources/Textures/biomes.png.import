@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://d3r7n5yna0565"
+path="res://.godot/imported/biomes.png-e5e430abce09eaf14b49a4a0295bc72a.image"
+
+[deps]
+
+source_file="res://Resources/Textures/biomes.png"
+dest_files=["res://.godot/imported/biomes.png-e5e430abce09eaf14b49a4a0295bc72a.image"]
+
+[params]
+
