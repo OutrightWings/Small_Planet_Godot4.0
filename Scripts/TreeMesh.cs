@@ -4,6 +4,8 @@ using System;
 public partial class TreeMesh : MultiMeshInstance3D
 {
     GroundTerrain groundTerrain;
+    [Export]
+    public Image image;
     bool initilized = false;
     public override void _Ready()
     {
@@ -17,23 +19,15 @@ public partial class TreeMesh : MultiMeshInstance3D
         }
     }
     public void Update(){
-        // ShaderMaterial mat = new ShaderMaterial();
-        // ImageTexture texture = (ImageTexture)mat.GetShaderParam("height");
-        // Image image = texture.GetData();
-        // image.Lock();
-        // for(int row = 0; row < GlobalData.RESOURCE_GRID_WIDTH; row++){
-        //     for(int col = 0; col < GlobalData.RESOURCE_GRID_WIDTH; col++){
-        //         int index = row * GlobalData.RESOURCE_GRID_WIDTH + col;
-        //         ResourceArea resource = groundTerrain.resources[index];
-        //         float wood = resource.wood / GlobalData.MAX_WOOD;
-        //         image.SetPixel(row,col,new Color(1,1,1,wood));
-        //     }
-        // }
-        // var newTexture = new ImageTexture();
-        // newTexture.CreateFromImage(image);
-        // newTexture.Flags -= 4;
-        
-        // mat.SetShaderParam("height",newTexture);
+        for(int row = 0; row < GlobalData.RESOURCE_GRID_WIDTH; row++){
+            for(int col = 0; col < GlobalData.RESOURCE_GRID_WIDTH; col++){
+                int index = row * GlobalData.RESOURCE_GRID_WIDTH + col;
+                ResourceArea resource = groundTerrain.resources[index];
+                float wood = resource.wood / GlobalData.MAX_WOOD;
+                //image.SetPixel(row,col,new Color(1,1,1,wood));
+                this.Multimesh.SetInstanceCustomData(index,new Color(1,1,1,wood));
+            }
+        }
     }
     private void InitalizeTrees(){
         var verts_ground = groundTerrain.verts;

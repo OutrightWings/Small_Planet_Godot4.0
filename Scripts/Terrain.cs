@@ -49,8 +49,7 @@ public abstract partial class Terrain : MeshInstance3D
         //Errode(3);
         GenerateEdge();
         Biome();
-        var texture =  new ImageTexture();
-        texture.SetImage(image);
+        var texture =  ImageTexture.CreateFromImage(image);
         //texture.Flags -= 4;
         ((StandardMaterial3D)this.MaterialOverride).AlbedoTexture = texture;
         // Convert Lists to arrays and assign to surface array

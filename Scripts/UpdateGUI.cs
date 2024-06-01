@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class UpdateGUI : CanvasLayer
+public partial class UpdateGUI : Control
 {
     private Label testTextArea;
 

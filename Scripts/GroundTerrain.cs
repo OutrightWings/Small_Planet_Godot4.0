@@ -58,17 +58,20 @@ public partial class GroundTerrain : Terrain
                 area.DrawTexture(ref image);
             }
         }
-        var texture =  new ImageTexture();
-        texture.SetImage(image);
+        var texture = ImageTexture.CreateFromImage(image);
         //texture.Flags -= 4;
         ((StandardMaterial3D)this.MaterialOverlay).AlbedoTexture = texture;
     }
     public void AreaSelected(int row, int col){
-        //EmitSignal("EmitResource", resources[row * GlobalData.DIMENSIONS + col]);
+        EmitSignal("EmitResource", resources[row * GlobalData.DIMENSIONS + col]);
     }
     #region Mesh Generation
-    private FastNoiseLite CreateNoise(float octaves, float persistence, float lacunarity, float period){ //(3,0.5f,2,64)
-        var noise = new FastNoiseLite();
+    private FastNoiseLite CreateNoise(int octaves, float persistence, float lacunarity, float period){ //(3,0.5f,2,64)
+        var noise = new FastNoiseLite(){
+            FractalOctaves = octaves,
+            FractalLacunarity = lacunarity
+
+        };
         return noise;
     }
     public override void GenerateTerrain(){
@@ -79,7 +82,7 @@ public partial class GroundTerrain : Terrain
         ((CollisionShape3D)this.GetNode("Area/CollisionShape")).Shape = Mesh.CreateTrimeshShape();
     }
     protected override void GenerateVert(int row, int col){
-        float steep = 0;
+        float steep;
 
         Color maskColor = island_mask.GetPixel(row,col);
         float maskHeight = maskColor.R;
@@ -173,8 +176,7 @@ public partial class GroundTerrain : Terrain
                 image.SetPixel(row,col,c);
             }
         }
-        var texture =  new ImageTexture();
-        texture.SetImage(image);
+        var texture =  ImageTexture.CreateFromImage(image);
         //texture.Flags -= 4;
         ((StandardMaterial3D)this.MaterialOverlay).AlbedoTexture = texture;
     }

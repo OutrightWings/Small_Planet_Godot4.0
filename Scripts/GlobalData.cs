@@ -13,7 +13,7 @@ public partial class GlobalData : Node{
     public Terrain water_mesh, ground_mesh;
     public override void _Ready()
     {
-        water_mesh = (Terrain)GetNode("/root/Root/Water/WaterMesh");
+       water_mesh = (Terrain)GetNode("/root/Root/Water/WaterMesh");
         ground_mesh = (Terrain)GetNode("/root/Root/Ground/GroundMesh");
         GenerateMeshes();
     }
@@ -25,6 +25,6 @@ public partial class GlobalData : Node{
     }
     private void GenerateMeshes(){
         ground_mesh.GenerateTerrain();
-        water_mesh.GenerateTerrain();
+       water_mesh.GenerateTerrain();
     }
 }
