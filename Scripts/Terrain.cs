@@ -13,7 +13,6 @@ public abstract partial class Terrain : MeshInstance3D
 
     public override void _Ready()
     {
-        surfaceArray.Resize((int)Mesh.ArrayType.Max);
     }
     
     public virtual void GenerateTerrain(){

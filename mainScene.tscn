@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://0a68jdjinosw"]
+[gd_scene load_steps=30 format=3 uid="uid://0a68jdjinosw"]
 
 [ext_resource type="Script" path="res://Scripts/GlobalData.cs" id="1_nbjva"]
 [ext_resource type="ArrayMesh" uid="uid://5j7jc16sksve" path="res://Resources/Models/LowPolyPineSharp.obj" id="2_7mxbg"]
@@ -20,6 +20,7 @@
 [ext_resource type="Script" path="res://Scripts/MeshArea.cs" id="9_ia2hb"]
 [ext_resource type="PackedScene" uid="uid://bmxpyqggahhmb" path="res://Resources/Objects/MainMenuScene.tscn" id="10_ub5hc"]
 [ext_resource type="Script" path="res://Scripts/UpdateGUI.cs" id="11_r1cvc"]
+[ext_resource type="Image" uid="uid://hq8oeo45irnb" path="res://Resources/Textures/height.png" id="18_84ixx"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w3i3i"]
 render_priority = 0
@@ -84,7 +85,6 @@ script = ExtResource("2_ump7p")
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.5
-autostart = true
 
 [node name="TreesMesh" type="MultiMeshInstance3D" parent="."]
 material_override = SubResource("ShaderMaterial_mpljq")
@@ -110,7 +110,7 @@ skeleton = NodePath("../..")
 script = ExtResource("6_44kux")
 island_mask = ExtResource("8_a88og")
 biome_mask = ExtResource("9_db586")
-image = ExtResource("8_a88og")
+image = ExtResource("18_84ixx")
 
 [node name="Area" type="Area3D" parent="Ground/GroundMesh"]
 monitorable = false
@@ -163,6 +163,9 @@ size_flags_horizontal = 4
 [node name="VBoxContainer" parent="Control/AspectRatioContainer2/PanelContainer" instance=ExtResource("10_ub5hc")]
 layout_mode = 2
 
+[connection signal="Reload" from="." to="." method="GenerateMeshes"]
+[connection signal="Reload" from="." to="Timer" method="start"]
+[connection signal="Reload" from="." to="TreesMesh" method="SetTreePositions"]
 [connection signal="timeout" from="Timer" to="TreesMesh" method="Update"]
 [connection signal="timeout" from="Timer" to="Ground/GroundMesh" method="Update"]
 [connection signal="EmitResource" from="Ground/GroundMesh" to="SelectionMarker" method="MoveMarker"]

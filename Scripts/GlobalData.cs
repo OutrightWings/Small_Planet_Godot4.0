@@ -12,16 +12,20 @@ public partial class GlobalData : Node{
     public static int REGION_SELCTION_SIZE = 2;
     
     public Terrain water_mesh, ground_mesh;
+    public Timer timer;
+    [Signal]
+     public delegate void ReloadEventHandler();
     public override void _Ready()
     {
-       water_mesh = (Terrain)GetNode("/root/Root/Water/WaterMesh");
-        ground_mesh = (Terrain)GetNode("/root/Root/Ground/GroundMesh");
-        GenerateMeshes();
+       water_mesh = (Terrain)GetNode("Water/WaterMesh");
+        ground_mesh = (Terrain)GetNode("Ground/GroundMesh");
+        timer = (Timer)GetNode("Timer");
+        //GenerateMeshes();
     }
     public override void _Process(double delta)
     {
         if(Input.IsActionJustPressed("Reload")){
-           GenerateMeshes();
+           EmitSignal("Reload");
         }
     }
     private void GenerateMeshes(){

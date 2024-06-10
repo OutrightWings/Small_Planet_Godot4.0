@@ -4,9 +4,14 @@ using Godot;
 public partial class GroundTerrain : Terrain
 {
     [Export]
-    Image island_mask,biome_mask;
-    FastNoiseLite noiseGround, noiseFall, noiseVegetation;
-    Spline terrainSpline, woodSpline;
+    Image island_mask;
+    [Export]
+    Image biome_mask;
+    FastNoiseLite noiseGround;
+    FastNoiseLite noiseFall;
+    FastNoiseLite noiseVegetation;
+    Spline terrainSpline;
+    Spline woodSpline;
     public ResourceArea[] resources;
     float FALL_DISTANCE = 1f;
      [Signal]
@@ -36,12 +41,12 @@ public partial class GroundTerrain : Terrain
             new Vector2(1,1)
         };
         woodSpline = new Spline(woodPoints);
-        resources = new ResourceArea[(int)(GlobalData.DIMENSIONS* GlobalData.DIMENSIONS)];
+        resources = new ResourceArea[(GlobalData.DIMENSIONS* GlobalData.DIMENSIONS)];
         base._Ready();
     }
     public void Update()
     {
-        var image = ((StandardMaterial3D)this.MaterialOverlay).AlbedoTexture.GetImage();
+        var image = biome_mask;
         //image.Lock();
         for(int row = 0; row < GlobalData.DIMENSIONS; row++){
             for(int col = 0; col < GlobalData.DIMENSIONS; col++){
@@ -87,7 +92,6 @@ public partial class GroundTerrain : Terrain
         var noise = new FastNoiseLite(){
             FractalOctaves = octaves,
             FractalLacunarity = lacunarity
-
         };
         return noise;
     }
@@ -145,19 +149,14 @@ public partial class GroundTerrain : Terrain
         for(int row = 0; row < GlobalData.DIMENSIONS; row++){
             for(int col = 0; col < GlobalData.DIMENSIONS; col++){
                 ResourceArea resource;
-                if(resources[row*GlobalData.DIMENSIONS+col] == null){
-                    resource = new ResourceArea(row,col,verts[row*GlobalData.DIMENSIONS+col].Y);
-                    resources[row*GlobalData.DIMENSIONS+col] = resource;
-                   // AddChild(resource.tree);
-                }
-                else{
-                    resource = resources[row*GlobalData.DIMENSIONS+col];
-                    resource.wood = 0;
-                }
+                int index = row*GlobalData.DIMENSIONS + col;
+                resources[index]?.Free();
+                resource = new ResourceArea(row,col,verts[index].Y);
+                resources[index] = resource;
                 
                 float rand = (float)GD.RandRange(0,0.2f);
 
-                int index = row*GlobalData.DIMENSIONS + col;
+                
                 Vector3 vert_center = verts[index];
                 float steep = vert_center.Y/GlobalData.SCALE;
                 biome_mask.SetPixel(row,col,Colors.Transparent);
@@ -187,14 +186,12 @@ public partial class GroundTerrain : Terrain
                 else{
                      c = Colors.Black;
                 }
-
-                
                 c = c.Darkened(rand);
                 image.SetPixel(row,col,c);
             }
         }
-        var texture =  ImageTexture.CreateFromImage(image);
-        //texture.Flags -= 4;
+
+        var texture =  ImageTexture.CreateFromImage(biome_mask);
         ((StandardMaterial3D)this.MaterialOverlay).AlbedoTexture = texture;
     }
 
