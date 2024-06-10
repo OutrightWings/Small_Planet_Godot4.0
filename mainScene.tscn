@@ -49,8 +49,14 @@ script = ExtResource("1_nbjva")
 [node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.707107, -1.23634e-07, 0.707107, 8.74228e-08, 1, 8.74228e-08, -0.707107, 0, 0.707107, 43.3088, 45.983, 128.429)
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.935654, 0.35292, 0, -0.35292, 0.935654, 22.9919, 16.997, 62.8646)
+[node name="Camera_Rotate" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.935654, 0.35292, 0, -0.35292, 0.935654, 37.5, 18.75, 37.5)
+
+[node name="Camera_Zoom" type="Node3D" parent="Camera_Rotate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6.623, 18.75)
+
+[node name="Camera3D" type="Camera3D" parent="Camera_Rotate/Camera_Zoom"]
+transform = Transform3D(1, 0, 0, 0, 1, 2.98023e-08, 0, -2.98023e-08, 1, 0, 0, 0)
 script = ExtResource("2_ump7p")
 
 [node name="Timer" type="Timer" parent="."]
