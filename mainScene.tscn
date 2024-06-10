@@ -1,8 +1,11 @@
-[gd_scene load_steps=24 format=3 uid="uid://0a68jdjinosw"]
+[gd_scene load_steps=29 format=3 uid="uid://0a68jdjinosw"]
 
 [ext_resource type="Script" path="res://Scripts/GlobalData.cs" id="1_nbjva"]
 [ext_resource type="ArrayMesh" uid="uid://5j7jc16sksve" path="res://Resources/Models/LowPolyPineSharp.obj" id="2_7mxbg"]
+[ext_resource type="Shader" path="res://Scripts/Shaders/decal.gdshader" id="2_euxyd"]
+[ext_resource type="Script" path="res://Scripts/SelectionMarker.cs" id="2_jl53q"]
 [ext_resource type="Script" path="res://Scripts/CameraController.cs" id="2_ump7p"]
+[ext_resource type="Texture2D" uid="uid://d0t3axijj0j2l" path="res://Resources/Textures/outline.png" id="3_22brv"]
 [ext_resource type="ArrayMesh" uid="uid://byp1jlvkmj5wv" path="res://Resources/Models/meshwater.tres" id="3_kvyxr"]
 [ext_resource type="Shader" path="res://Scripts/Shaders/treeShader.gdshader" id="3_o21ac"]
 [ext_resource type="Texture2D" uid="uid://cmpljflf2t3gw" path="res://Resources/Textures/water.png" id="4_jtknt"]
@@ -17,6 +20,18 @@
 [ext_resource type="Script" path="res://Scripts/MeshArea.cs" id="9_ia2hb"]
 [ext_resource type="PackedScene" uid="uid://bmxpyqggahhmb" path="res://Resources/Objects/MainMenuScene.tscn" id="10_ub5hc"]
 [ext_resource type="Script" path="res://Scripts/UpdateGUI.cs" id="11_r1cvc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w3i3i"]
+render_priority = 0
+shader = ExtResource("2_euxyd")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/cube_half_x = 0.5
+shader_parameter/cube_half_y = 5.0
+shader_parameter/cube_half_z = 0.5
+shader_parameter/texture_albedo = ExtResource("3_22brv")
+
+[sub_resource type="BoxMesh" id="BoxMesh_cok43"]
+material = SubResource("ShaderMaterial_w3i3i")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mpljq"]
 render_priority = 0
@@ -45,6 +60,14 @@ texture_filter = 0
 
 [node name="Root" type="Node3D"]
 script = ExtResource("1_nbjva")
+
+[node name="SelectionMarker" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 10, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("2_jl53q")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SelectionMarker"]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
+mesh = SubResource("BoxMesh_cok43")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.707107, -1.23634e-07, 0.707107, 8.74228e-08, 1, 8.74228e-08, -0.707107, 0, 0.707107, 43.3088, 45.983, 128.429)
@@ -142,6 +165,7 @@ layout_mode = 2
 
 [connection signal="timeout" from="Timer" to="TreesMesh" method="Update"]
 [connection signal="timeout" from="Timer" to="Ground/GroundMesh" method="Update"]
+[connection signal="EmitResource" from="Ground/GroundMesh" to="SelectionMarker" method="MoveMarker"]
 [connection signal="EmitResource" from="Ground/GroundMesh" to="Control" method="PopulateAreaDataInGUI"]
 [connection signal="AreaSelected" from="Ground/GroundMesh/Area" to="Ground/GroundMesh" method="AreaSelected"]
 [connection signal="input_event" from="Ground/GroundMesh/Area" to="Ground/GroundMesh/Area" method="OnAreaInputEvent"]

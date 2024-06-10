@@ -10,7 +10,9 @@ public partial class GroundTerrain : Terrain
     public ResourceArea[] resources;
     float FALL_DISTANCE = 1f;
      [Signal]
-     public delegate void EmitResourceEventHandler(ResourceArea area);
+     public delegate void EmitResourceEventHandler(ResourceArea[] areas);
+     [Signal]
+     public delegate void EmitCoordEventHandler(Vector3 pos);
     public override void _Ready()
     {
 	    noiseGround = CreateNoise(3,0.5f,2,64);
@@ -62,8 +64,23 @@ public partial class GroundTerrain : Terrain
         //texture.Flags -= 4;
         ((StandardMaterial3D)this.MaterialOverlay).AlbedoTexture = texture;
     }
-    public void AreaSelected(int row, int col){
-        EmitSignal("EmitResource", resources[row * GlobalData.DIMENSIONS + col]);
+    public void AreaSelected(int selected_row, int selected_col){
+        int dimension = GlobalData.REGION_SELCTION_SIZE*2+1;
+        var selected = new ResourceArea[dimension*dimension];
+        int pos = 0;
+        for(int row = -GlobalData.REGION_SELCTION_SIZE; row < GlobalData.REGION_SELCTION_SIZE+1; row++){
+            for(int col = -GlobalData.REGION_SELCTION_SIZE; col < GlobalData.REGION_SELCTION_SIZE+1; col++){
+                int index = ((selected_row+row) * GlobalData.DIMENSIONS) + (selected_col+col);
+                if(index >= 0 && index < GlobalData.DIMENSIONS*GlobalData.DIMENSIONS){
+                    selected[pos] = resources[index];
+                }
+                else{
+                    selected[pos] = null;
+                }
+                pos++;
+            }
+        }
+        EmitSignal("EmitResource", selected);
     }
     #region Mesh Generation
     private FastNoiseLite CreateNoise(int octaves, float persistence, float lacunarity, float period){ //(3,0.5f,2,64)
