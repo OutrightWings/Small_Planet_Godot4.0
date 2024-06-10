@@ -37,8 +37,21 @@ public partial class TreeMesh : MultiMeshInstance3D
                 float box_width = GlobalData.DIMENSIONS * GlobalData.SCALE / GlobalData.RESOURCE_GRID_WIDTH;
                 float box_pos_x = box_width * row + 0.5f * box_width; 
                 float box_pos_z = box_width * col + 0.5f * box_width;
+                float rand_x = (float)GD.RandRange(-0.5,0.5);
+                float rand_z = (float)GD.RandRange(-0.5,0.5);
+                box_pos_x += rand_x *GlobalData.SCALE;
+                box_pos_z += rand_z*GlobalData.SCALE;
+
                 int index = row*GlobalData.RESOURCE_GRID_WIDTH+col;
-                Vector3 position = new Vector3(box_pos_x,verts_ground[index].Y,box_pos_z);
+                int index_diag = (row+1)*GlobalData.RESOURCE_GRID_WIDTH+(col+1);
+                int index_diag_inv = (row+1)*GlobalData.RESOURCE_GRID_WIDTH+(col+1);
+                float y1 = verts_ground[index].Y;
+                float y2 = verts_ground[index_diag].Y;
+                float lerped = Mathf.Lerp(y1,y2,rand_x+0.5f);
+               
+                
+
+                Vector3 position = new Vector3(box_pos_x,lerped,box_pos_z);
                 Transform3D transform = new Transform3D(Basis.Identity, position);
                 this.Multimesh.SetInstanceTransform(index,transform);
             }
