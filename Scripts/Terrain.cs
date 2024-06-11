@@ -2,19 +2,13 @@ using Godot;
 using System.Collections.Generic;
 public abstract partial class Terrain : MeshInstance3D
 {
-    [Export]
-    public Image image;
-
     protected Godot.Collections.Array surfaceArray = new Godot.Collections.Array();
     public List<Vector3> verts = new List<Vector3>();
     protected List<Vector2> uvs = new List<Vector2>();
     protected List<Vector3> normals = new List<Vector3>();
     protected List<int> indices = new List<int>();
-
-    public override void _Ready()
-    {
-    }
-    
+     [Signal]
+    public delegate void CreateImagesEventHandler();
     public virtual void GenerateTerrain(){
         ((ArrayMesh)this.Mesh).ClearSurfaces();
         GenerateMesh();
@@ -45,18 +39,19 @@ public abstract partial class Terrain : MeshInstance3D
                 GenerateVert(row,col);
             }
         }
-        //Errode(3);
+        Errode(3);
         GenerateEdge();
-        Biome();
-        var texture =  ImageTexture.CreateFromImage(image);
-        //texture.Flags -= 4;
-        ((StandardMaterial3D)this.MaterialOverride).AlbedoTexture = texture;
+        EmitSignal("CreateImages");
         // Convert Lists to arrays and assign to surface array
         surfaceArray[(int)Mesh.ArrayType.Vertex] = verts.ToArray();
         surfaceArray[(int)Mesh.ArrayType.TexUV] = uvs.ToArray();
         surfaceArray[(int)Mesh.ArrayType.Normal] = normals.ToArray();
         surfaceArray[(int)Mesh.ArrayType.Index] = indices.ToArray();
         ((ArrayMesh)this.Mesh).AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceArray);
+    }
+    public void UpdateBaseTexture(Image image){
+        var texture =  ImageTexture.CreateFromImage(image);
+        ((StandardMaterial3D)this.MaterialOverride).AlbedoTexture = texture;
     }
     protected abstract void GenerateVert(int row, int col);
     protected virtual void GenerateEdge(){
@@ -133,5 +128,4 @@ public abstract partial class Terrain : MeshInstance3D
         }
     }
     protected abstract void Errode(int times);
-    protected abstract void Biome();
 }

@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 public partial class WaterTerrain : Terrain
 {
-    protected override void Biome()
-    {
-        
-    }
-
     protected override void Errode(int times)
     {
         

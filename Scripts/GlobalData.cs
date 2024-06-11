@@ -9,17 +9,18 @@ public partial class GlobalData : Node{
     public static int RESOURCE_GRID_WIDTH = DIMENSIONS;
     public static float MAX_WOOD = 10;
     public static float BASE_PLANT_GROWTH_RATE = 0.1f;
-    public static int REGION_SELCTION_SIZE = 2;
+    public static int REGION_SELECTION_RADIOUS = 2;
     
     public Terrain water_mesh, ground_mesh;
-    public Timer timer;
+
     [Signal]
-     public delegate void ReloadEventHandler();
+    public delegate void ReloadEventHandler();
+    [Signal]
+    public delegate void ClockEventHandler();
     public override void _Ready()
     {
        water_mesh = (Terrain)GetNode("Water/WaterMesh");
         ground_mesh = (Terrain)GetNode("Ground/GroundMesh");
-        timer = (Timer)GetNode("Timer");
         //GenerateMeshes();
     }
     public override void _Process(double delta)
@@ -30,6 +31,13 @@ public partial class GlobalData : Node{
     }
     private void GenerateMeshes(){
         ground_mesh.GenerateTerrain();
-       water_mesh.GenerateTerrain();
+        water_mesh.GenerateTerrain();
+        EmitSignal("Clock");
+    }
+    public static int Index(int row, int col){
+        return Index(row,col,DIMENSIONS);
+    }
+    public static int Index(int row, int col, int dim){
+        return (row * dim) + col;
     }
 }
