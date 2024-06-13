@@ -7,8 +7,6 @@ public partial class ResourceArea : Node
 {
     private Dictionary<string,float> resourceMap = new();
     public bool isAboveGround = false;
-    public float plantGrowthRate;
-    public float alphaVarience;
     public int row, col;
     public float height;
     Spline alphaSpline;
@@ -22,13 +20,14 @@ public partial class ResourceArea : Node
             new Vector2(1,1)
         };
         alphaSpline = new Spline(points);
-        alphaVarience = (float)GD.RandRange(0,0.2f);
-        plantGrowthRate = GlobalData.BASE_PLANT_GROWTH_RATE;
+        AddResource("wood",0);
+		AddResource("plantGrowthRate",GlobalData.BASE_PLANT_GROWTH_RATE);
+        AddResource("alphaVarience",(float)GD.RandRange(0,0.2f));
     }
     public void GrowResource(ref ResourceArea[] neighbors){
         if(isAboveGround){
             float wood = GetResourceAmount("wood");
-            float deltaWood = wood * plantGrowthRate * (1 - (wood / GlobalData.MAX_WOOD));
+            float deltaWood = wood * GetResourceAmount("plantGrowthRate") * (1 - (wood / GlobalData.MAX_WOOD));
             AddToResource("wood",deltaWood);
             if(wood >= 0.4f * GlobalData.MAX_WOOD){
                 for(int itr = 1; itr < 8; itr+=2){
@@ -49,7 +48,7 @@ public partial class ResourceArea : Node
                 var alpha = wood/GlobalData.MAX_WOOD;
                 alpha = alphaSpline.Interpolate(alpha);
                 color.A = alpha;
-                color = color.Darkened(alphaVarience);
+                color = color.Darkened(GetResourceAmount("alphaVarience"));
             }
             image.SetPixel(row,col,color);
         }
@@ -63,7 +62,7 @@ public partial class ResourceArea : Node
         return resourceMap[name];
     }
 
-    public void AddResource(string name, int amount)
+    public void AddResource(string name, float amount)
     {
         resourceMap.Add(name,amount);
     }

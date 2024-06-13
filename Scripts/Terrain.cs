@@ -41,13 +41,14 @@ public abstract partial class Terrain : MeshInstance3D
         }
         Errode(3);
         GenerateEdge();
-        EmitSignal("CreateImages");
         // Convert Lists to arrays and assign to surface array
         surfaceArray[(int)Mesh.ArrayType.Vertex] = verts.ToArray();
         surfaceArray[(int)Mesh.ArrayType.TexUV] = uvs.ToArray();
         surfaceArray[(int)Mesh.ArrayType.Normal] = normals.ToArray();
         surfaceArray[(int)Mesh.ArrayType.Index] = indices.ToArray();
         ((ArrayMesh)this.Mesh).AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceArray);
+        EmitSignal("CreateImages");
+        
     }
     public void UpdateBaseTexture(Image image){
         var texture =  ImageTexture.CreateFromImage(image);

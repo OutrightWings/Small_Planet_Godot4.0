@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 public abstract partial class ResourceManager : Node3D
 {
@@ -13,10 +14,12 @@ public abstract partial class ResourceManager : Node3D
     public delegate void UpdateResourcesEventHandler();
 	[Signal]
     public delegate void EmitSelectedResourcesEventHandler(ResourceArea[] areas);
+
     #region Getters/Setters
     //Takes unscaled pos, returns unscaled
     public float GetHeightAtPoint(float row, float col){
-		return GetResourceArea((int)row,(int)col).height;
+		float unscaledHeightAtPoint = GetResourceArea((int)row,(int)col).height;
+		return unscaledHeightAtPoint;
 	}
 	public void EmptyResources(){
 		resources.ForEach(resource => resource.Free());
@@ -24,7 +27,6 @@ public abstract partial class ResourceManager : Node3D
 	}
 	public ResourceArea AddNewResourceArea(int row, int col, float height){
         ResourceArea resource = new(row, col, height);
-		resource.AddResource("wood",0);
 		resources.Add(resource);
 		return GetResourceArea(row,col);
 	}

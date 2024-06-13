@@ -3,11 +3,11 @@ using System;
 
 public partial class TreeMesh : MultiMeshInstance3D
 {
-    Ground ground;
+    GroundManager ground;
     bool initilized = false;
     public override void _Ready()
     {
-        ground = (Ground)GetNode("/root/Root/Ground");
+        ground = (GroundManager)GetNode("/root/Root/Ground");
         InitalizeTrees();
     }
     public void Update(){
@@ -15,7 +15,9 @@ public partial class TreeMesh : MultiMeshInstance3D
             for(int col = 0; col < GlobalData.RESOURCE_GRID_WIDTH; col++){
                 int index = GlobalData.Index(row,col,GlobalData.RESOURCE_GRID_WIDTH);
                 float wood = ground.GetResourceAmount(row,col,"wood") / GlobalData.MAX_WOOD;
-                this.Multimesh.SetInstanceCustomData(index,new Color(1,1,1,wood));
+                var color = Colors.Green.Darkened(ground.GetResourceAmount(row,col,"alphaVarience")*4);
+                color.A = wood;
+                this.Multimesh.SetInstanceCustomData(index,color);
             }
         }
     }

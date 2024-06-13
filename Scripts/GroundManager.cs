@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public partial class Ground : ResourceManager
+public partial class GroundManager : ResourceManager
 {
 	[Export]
 	public Image biome_image;
@@ -10,6 +10,7 @@ public partial class Ground : ResourceManager
 	
     public override void _Ready()
     {
+        base._Ready();
         noiseVegetation = GroundTerrain.CreateNoise(3,0.5f,2,100);
        
         Vector2[] woodPoints = {

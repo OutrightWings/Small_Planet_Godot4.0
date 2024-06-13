@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class Water : ResourceManager
+public partial class WaterManager : ResourceManager
 {
 	public override void CreateMeshImages(){
 		for(int row = 0; row < GlobalData.DIMENSIONS; row++){

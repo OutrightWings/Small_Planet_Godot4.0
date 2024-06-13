@@ -8,7 +8,7 @@ public partial class GroundTerrain : Terrain
 
     Spline terrainSpline;
 
-    private Ground ground;
+    private GroundManager ground;
     float FALL_DISTANCE = 1f;
 
     public override void _Ready()
@@ -27,7 +27,7 @@ public partial class GroundTerrain : Terrain
             new Vector2(100,GlobalData.HEIGHT/2)
         };
         terrainSpline = new Spline(terrainPoints);
-        ground = (Ground)GetNode("..");
+        ground = (GroundManager)GetNode("..");
         base._Ready();
     }
     
@@ -49,6 +49,7 @@ public partial class GroundTerrain : Terrain
         ground.EmptyResources();
         base.GenerateTerrain();
         ((CollisionShape3D)this.GetNode("Area/CollisionShape")).Shape = Mesh.CreateTrimeshShape();
+        
     }
     protected override void GenerateVert(int row, int col){
         float steep;
