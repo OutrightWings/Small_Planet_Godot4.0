@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://0a68jdjinosw"]
+[gd_scene load_steps=39 format=3 uid="uid://0a68jdjinosw"]
 
 [ext_resource type="Script" path="res://Scripts/GlobalData.cs" id="1_nbjva"]
 [ext_resource type="ArrayMesh" uid="uid://5j7jc16sksve" path="res://Resources/Models/LowPolyPineSharp.obj" id="2_7mxbg"]
@@ -21,6 +21,11 @@
 [ext_resource type="Script" path="res://Scripts/UpdateGUI.cs" id="11_r1cvc"]
 [ext_resource type="Script" path="res://Scripts/GroundManager.cs" id="13_rwi4c"]
 [ext_resource type="PackedScene" uid="uid://d15t4oaos76du" path="res://Resources/Objects/Temp.tscn" id="19_20nt4"]
+[ext_resource type="PackedScene" uid="uid://b8s453plvyq8e" path="res://Resources/Objects/HarvestArea.tscn" id="20_car8h"]
+[ext_resource type="Script" path="res://ModeSelectionButton.cs" id="22_6jk6g"]
+[ext_resource type="Texture2D" uid="uid://djcp7x8ejfq3r" path="res://Resources/Textures/Icons/Select.png" id="22_kv1y0"]
+[ext_resource type="Texture2D" uid="uid://btfbkgpgqlga" path="res://Resources/Textures/Icons/Wood.png" id="24_16s2f"]
+[ext_resource type="Texture2D" uid="uid://bhbu67sxvrk5p" path="res://Resources/Textures/Icons/temp_building.png" id="25_ib4g5"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w3i3i"]
 render_priority = 0
@@ -162,11 +167,16 @@ script = ExtResource("6_44kux")
 island_mask = ExtResource("8_a88og")
 
 [node name="Area" type="Area3D" parent="Ground/GroundMesh"]
+monitorable = false
 script = ExtResource("9_ia2hb")
 temp_object = ExtResource("19_20nt4")
+resourceCollectionRegion = ExtResource("20_car8h")
 
 [node name="CollisionShape" type="CollisionShape3D" parent="Ground/GroundMesh/Area"]
 shape = SubResource("ConcavePolygonShape3D_x3w87")
+
+[node name="HarvestArea" parent="Ground/GroundMesh/Area" instance=ExtResource("20_car8h")]
+transform = Transform3D(1, 0, 0, 0, 10, 0, 0, 0, 1, 5.01777, 0, 13.2295)
 
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
@@ -180,12 +190,8 @@ script = ExtResource("11_r1cvc")
 
 [node name="InfoBox" type="AspectRatioContainer" parent="Control"]
 layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_top = -40.0
 offset_right = 40.0
-grow_vertical = 0
+offset_bottom = 40.0
 
 [node name="PanelContainer" type="PanelContainer" parent="Control/InfoBox"]
 layout_mode = 2
@@ -214,31 +220,46 @@ layout_mode = 2
 
 [node name="Tools" type="AspectRatioContainer" parent="Control"]
 layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
+anchors_preset = 2
 anchor_top = 1.0
-anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -79.0
-offset_top = -170.0
-offset_right = -1.0
-offset_bottom = -104.0
-grow_horizontal = 0
+offset_top = -66.0
+offset_right = 196.0
 grow_vertical = 0
 
 [node name="PanelContainer" type="PanelContainer" parent="Control/Tools"]
 layout_mode = 2
 
-[node name="HFlowContainer" type="HFlowContainer" parent="Control/Tools/PanelContainer"]
+[node name="TabContainer" type="TabContainer" parent="Control/Tools/PanelContainer"]
+layout_mode = 2
+tab_alignment = 1
+clip_tabs = false
+
+[node name="Harvesting" type="HBoxContainer" parent="Control/Tools/PanelContainer/TabContainer"]
 layout_mode = 2
 
-[node name="SelectButton" type="Button" parent="Control/Tools/PanelContainer/HFlowContainer"]
+[node name="SelectButton" type="Button" parent="Control/Tools/PanelContainer/TabContainer/Harvesting"]
 layout_mode = 2
-text = "Sel"
+icon = ExtResource("22_kv1y0")
+script = ExtResource("22_6jk6g")
 
-[node name="BuildingButton" type="Button" parent="Control/Tools/PanelContainer/HFlowContainer"]
+[node name="HarvestWoodButton" type="Button" parent="Control/Tools/PanelContainer/TabContainer/Harvesting"]
 layout_mode = 2
-text = "Bui"
+text = "
+"
+icon = ExtResource("24_16s2f")
+script = ExtResource("22_6jk6g")
+selection = 2
+
+[node name="Building" type="HBoxContainer" parent="Control/Tools/PanelContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="BuildingButton" type="Button" parent="Control/Tools/PanelContainer/TabContainer/Building"]
+layout_mode = 2
+icon = ExtResource("25_ib4g5")
+script = ExtResource("22_6jk6g")
+selection = 1
 
 [connection signal="Clock" from="." to="Timer" method="start"]
 [connection signal="Reload" from="." to="." method="GenerateMeshes"]
@@ -253,5 +274,13 @@ text = "Bui"
 [connection signal="UpdateOverlayImage" from="Ground" to="Ground/GroundMesh" method="UpdateOverlayTexture"]
 [connection signal="UpdateResources" from="Ground" to="TreesMesh" method="SetTreePositions"]
 [connection signal="CreateImages" from="Ground/GroundMesh" to="Ground" method="CreateMeshImages"]
+[connection signal="AreaDeSelected" from="Ground/GroundMesh/Area" to="SelectionMarker" method="DisableMarker"]
+[connection signal="AreaDeSelected" from="Ground/GroundMesh/Area" to="Control" method="ClearAreaInfo"]
 [connection signal="AreaSelected" from="Ground/GroundMesh/Area" to="Ground" method="SelectedResource"]
 [connection signal="input_event" from="Ground/GroundMesh/Area" to="Ground/GroundMesh/Area" method="OnAreaInputEvent"]
+[connection signal="UpdateMode" from="Control/Tools/PanelContainer/TabContainer/Harvesting/SelectButton" to="Ground/GroundMesh/Area" method="SetSelectionMode"]
+[connection signal="pressed" from="Control/Tools/PanelContainer/TabContainer/Harvesting/SelectButton" to="Control/Tools/PanelContainer/TabContainer/Harvesting/SelectButton" method="OnClick"]
+[connection signal="UpdateMode" from="Control/Tools/PanelContainer/TabContainer/Harvesting/HarvestWoodButton" to="Ground/GroundMesh/Area" method="SetSelectionMode"]
+[connection signal="pressed" from="Control/Tools/PanelContainer/TabContainer/Harvesting/HarvestWoodButton" to="Control/Tools/PanelContainer/TabContainer/Harvesting/HarvestWoodButton" method="OnClick"]
+[connection signal="UpdateMode" from="Control/Tools/PanelContainer/TabContainer/Building/BuildingButton" to="Ground/GroundMesh/Area" method="SetSelectionMode"]
+[connection signal="pressed" from="Control/Tools/PanelContainer/TabContainer/Building/BuildingButton" to="Control/Tools/PanelContainer/TabContainer/Building/BuildingButton" method="OnClick"]

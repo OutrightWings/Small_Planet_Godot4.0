@@ -11,4 +11,7 @@ public partial class SelectionMarker : Node3D
 		Vector3 pos = new Vector3((area.row+0.5f)*GlobalData.SCALE,(area.height+0.5f)*GlobalData.SCALE,(area.col+0.5f)*GlobalData.SCALE);
 		this.Position = pos;
 	}
+	public void DisableMarker(){
+		this.Position = new Vector3(-10,0,-10);
+	}
 }

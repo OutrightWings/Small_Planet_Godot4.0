@@ -19,4 +19,7 @@ public partial class UpdateGUI : Control
         //testTextArea.Text = $"({area.row},{area.col})\n";
         testTextArea.Text = $"Wood:{wood}\n";
     }
+    public void ClearAreaInfo(){
+        testTextArea.Text = "";
+    }
 }

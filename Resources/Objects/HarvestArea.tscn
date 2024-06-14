@@ -1,0 +1,25 @@
+[gd_scene load_steps=6 format=3 uid="uid://b8s453plvyq8e"]
+
+[ext_resource type="Script" path="res://Resources/Objects/HarvestArea.cs" id="1_osete"]
+[ext_resource type="Shader" path="res://Scripts/Shaders/decal.gdshader" id="2_yk5x1"]
+[ext_resource type="Texture2D" uid="uid://d0t3axijj0j2l" path="res://Resources/Textures/outline.png" id="3_yp8i4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2ft5o"]
+render_priority = 0
+shader = ExtResource("2_yk5x1")
+shader_parameter/albedo = Color(1, 0, 0, 1)
+shader_parameter/cube_half_x = 0.5
+shader_parameter/cube_half_y = 50.0
+shader_parameter/cube_half_z = 0.5
+shader_parameter/texture_albedo = ExtResource("3_yp8i4")
+
+[sub_resource type="BoxMesh" id="BoxMesh_kq5ky"]
+
+[node name="HarvestArea" type="Node3D"]
+script = ExtResource("1_osete")
+colorOfArea = Color(1, 0, 0, 1)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.5)
+material_override = SubResource("ShaderMaterial_2ft5o")
+mesh = SubResource("BoxMesh_kq5ky")

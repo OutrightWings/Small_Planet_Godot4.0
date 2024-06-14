@@ -4,16 +4,23 @@ using System.Collections.Generic;
 
 public partial class MeshArea : Area3D
 {
-    public ModeSelect modeSelect = ModeSelect.BUILD;
+    public ModeSelect modeSelect = ModeSelect.SELECT;
     GroundManager ground;
     [Export]
     PackedScene temp_object;
+    [Export]
+    PackedScene resourceCollectionRegion;
     public enum ModeSelect{
         SELECT,
-        BUILD
+        BUILD,
+        HARVEST_WOOD_SELECT
     }
     [Signal]
     public delegate void AreaSelectedEventHandler(int row, int col);
+    [Signal]
+    public delegate void AreaDeSelectedEventHandler();
+    bool isPlacing = false;
+    HarvestArea currentPlacing = null;
     public override void _Ready()
     {
         base._Ready();
@@ -27,8 +34,26 @@ public partial class MeshArea : Area3D
                 }
                 else if(ModeSelect.BUILD == modeSelect){
                     PlaceBuilding(pos);
+                } else if(ModeSelect.HARVEST_WOOD_SELECT == modeSelect){
+                    if(isPlacing){
+                        currentPlacing.SetScaledCorner(pos);
+                        isPlacing = false;
+                    }else {
+                        isPlacing = true;
+                        currentPlacing = (HarvestArea) resourceCollectionRegion.Instantiate();
+                        AddChild(currentPlacing);
+                        currentPlacing.SetInitialCorner(pos);
+                    }
+                    
+                    
                 }
+           } else if(click.ButtonIndex == MouseButton.Right){
+                EmitSignal("AreaDeSelected");
            }
+       } else if(e is InputEventMouseMotion drag){
+            if(isPlacing){
+                currentPlacing.SetScaledCorner(pos);
+            }
        }
     }
     private void SelectArea(Vector3 pos){
