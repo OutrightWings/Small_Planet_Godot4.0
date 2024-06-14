@@ -48,7 +48,11 @@ public partial class MeshArea : Area3D
                     
                 }
            } else if(click.ButtonIndex == MouseButton.Right){
-                EmitSignal("AreaDeSelected");
+                if(isPlacing){
+                    FreePlacement();
+                } else {
+                    EmitSignal("AreaDeSelected");
+                }
            }
        } else if(e is InputEventMouseMotion drag){
             if(isPlacing){
@@ -67,6 +71,17 @@ public partial class MeshArea : Area3D
         AddChild(obj);
     }
     public void SetSelectionMode(ModeSelect select){
-        modeSelect = select;
+        if(modeSelect == select){
+            modeSelect = ModeSelect.SELECT;
+            FreePlacement();
+        } else{
+            modeSelect = select;
+        }
+    }
+    private void FreePlacement(){
+        if(isPlacing){
+            currentPlacing?.Free();
+            isPlacing = false;
+        }
     }
 }
