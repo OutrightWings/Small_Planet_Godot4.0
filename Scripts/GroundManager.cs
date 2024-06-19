@@ -1,24 +1,14 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 public partial class GroundManager : ResourceManager
 {
 	[Export]
 	public Image biome_image;
-	FastNoiseLite noiseVegetation;
-	Spline woodSpline;
-	
     public override void _Ready()
     {
         base._Ready();
-        noiseVegetation = GroundTerrain.CreateNoise(3,0.5f,2,100);
-       
-        Vector2[] woodPoints = {
-            new Vector2(0,0),
-            new Vector2(0.5f,0),
-            new Vector2(1,1)
-        };
-        woodSpline = new Spline(woodPoints);
     }
 	public override void UpdateTick()
     {
@@ -33,7 +23,6 @@ public partial class GroundManager : ResourceManager
         EmitSignal("UpdateOverlayImage",biome_image);
     }
 	public override void CreateMeshImages(){
-		noiseVegetation.Seed = (int)GD.Randi();
         for(int row = 0; row < GlobalData.DIMENSIONS; row++){
             for(int col = 0; col < GlobalData.DIMENSIONS; col++){
                 ResourceArea resource = GetResourceArea(row,col);
@@ -52,8 +41,7 @@ public partial class GroundManager : ResourceManager
                 else if(steep <= GlobalData.HEIGHT/5f){
                     resource.isAboveGround = true;
                      c = Colors.DarkGoldenrod;
-                     float veg_noise = Mathf.Clamp(noiseVegetation.GetNoise2D(row,col)*5f,-1,1);
-                     veg_noise = woodSpline.Interpolate(veg_noise);
+                     float veg_noise  = resource.GetResourceAmount("noise_veg");
                     if(veg_noise > 0){
                         resource.AddToResource("wood",(int)(veg_noise * GlobalData.MAX_WOOD));
                         resource.DrawTexture(ref biome_image);
@@ -67,6 +55,12 @@ public partial class GroundManager : ResourceManager
                 }
                 else{
                      c = Colors.Black;
+                }
+                var river = resource.GetResourceAmount("noise_river");
+                var mountain = resource.GetResourceAmount("noise_mountain");
+                //RIVER TEST: INTERIM VALUES
+                if(Mathf.Abs(river)+0.1f*(1-Mathf.Abs(mountain)) <= .1f){
+                    c = Colors.BlueViolet;
                 }
                 c = c.Darkened(rand);
                 base_image.SetPixel(row,col,c);

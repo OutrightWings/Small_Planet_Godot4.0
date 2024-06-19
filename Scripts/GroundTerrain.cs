@@ -1,33 +1,103 @@
+using System;
 using Godot;
 public partial class GroundTerrain : Terrain
 {
     [Export]
     Image island_mask;
-    FastNoiseLite noiseGround;
+    FastNoiseLite noise_mountain;
+    FastNoiseLite noise_bumps;
+    FastNoiseLite noise_river;
+    FastNoiseLite noise_veg;
     FastNoiseLite noiseFall;
 
-    Spline terrainSpline;
+    Spline mountain_height_spline, mountain_bumps_spline, bumps_spline, river_height_spline, river_bumps_spline;
+	Spline vegSpline;
 
     private GroundManager ground;
     float FALL_DISTANCE = 1f;
 
     public override void _Ready()
     {
-	    noiseGround = CreateNoise(3,0.5f,2,64);
-        noiseFall = CreateNoise(3,0.5f,2,30);
+	    noise_mountain = CreateNoise(3,0.5f,2,0.005f);
+        noise_bumps = CreateNoise(3,0.5f,2,0.02f);
+        noise_river = CreateNoise(3,0.5f,2,0.01f);
+        noise_veg = CreateNoise(3,0.5f,2,0.01f);
+
+        noiseFall = CreateNoise(3,0.5f,2,0.01f);
         FALL_DISTANCE *= GlobalData.SCALE;
-        Vector2[] terrainPoints = {
-            new Vector2(0,0),
-            new Vector2(1,0.3f),
-            new Vector2(3,4),
-            new Vector2(5,5),
-            new Vector2(9,6.6f),
-            new Vector2(9.5f,6.6f),
-            new Vector2(14,10f),
-            new Vector2(100,GlobalData.HEIGHT/2)
-        };
-        terrainSpline = new Spline(terrainPoints);
         ground = (GroundManager)GetNode("..");
+       
+
+        float river_depth=0.2f;
+        float river_width=0.05f;
+        float river_valley_width=0.1f;
+        float mountain_height = 1f;
+        float mountain_width=0.3f;
+        float foothills_width=0.4f;
+        Vector2[] noise_veg_points = {
+            new Vector2(0,0),
+            new Vector2(0.5f,0),
+            new Vector2(1,1)
+        };
+        vegSpline = new Spline(noise_veg_points);
+        
+        Vector2[] noise_mountain_height_points = {
+            new Vector2(-1000,river_depth),
+            new Vector2(-1,river_depth),
+            new Vector2(-foothills_width,mountain_height/4),
+            new Vector2(-mountain_width,mountain_height/2),
+            new Vector2(0,mountain_height),
+            new Vector2(mountain_width,mountain_height/2),
+            new Vector2(foothills_width,mountain_height/4),
+            new Vector2(1,river_depth),
+            new Vector2(1000,river_depth),
+
+        };
+        mountain_height_spline = new Spline(noise_mountain_height_points);
+
+        Vector2[] noise_mountain_bumps_points = {
+            new Vector2(-1000,.5f),
+            new Vector2(-foothills_width,.5f),
+            new Vector2(-mountain_width,1f),
+            new Vector2(mountain_width,1f),
+            new Vector2(foothills_width,.5f),
+            new Vector2(1000,.5f),
+        };
+        mountain_bumps_spline = new Spline(noise_mountain_bumps_points);
+        
+        Vector2[] noise_bumps_points = {
+            new Vector2(-1000,2),
+            new Vector2(-1,2f),
+            new Vector2(0,0),
+            new Vector2(1,2f),
+            new Vector2(1000,2),
+
+        };
+        bumps_spline = new Spline(noise_bumps_points);
+        
+        Vector2[] noise_river_height_points = {
+            new Vector2(-1000,0),
+            new Vector2(-1,0),
+            new Vector2(-river_valley_width,-river_depth/2),
+            new Vector2(-river_width,-river_depth),
+            new Vector2(river_width,-river_depth),
+            new Vector2(river_valley_width,-river_depth/2),
+            new Vector2(1,0),
+            new Vector2(1000,0),
+  
+        };
+        river_height_spline = new Spline(noise_river_height_points);
+
+        Vector2[] noise_river_bumps_points = {
+            new Vector2(-1000,1),
+            new Vector2(-river_valley_width*2,1),
+            new Vector2(-river_valley_width,0),
+            new Vector2(river_valley_width,0),
+            new Vector2(river_valley_width*2,1),
+            new Vector2(1000,1),
+        };
+        river_bumps_spline = new Spline(noise_river_bumps_points);
+
         base._Ready();
     }
     
@@ -39,12 +109,15 @@ public partial class GroundTerrain : Terrain
     public static FastNoiseLite CreateNoise(int octaves, float persistence, float lacunarity, float period){ //(3,0.5f,2,64)
         var noise = new FastNoiseLite(){
             FractalOctaves = octaves,
-            FractalLacunarity = lacunarity
+            FractalLacunarity = lacunarity,
+            Frequency = period
         };
         return noise;
     }
     public override void GenerateTerrain(){
-        noiseGround.Seed = (int)GD.Randi();
+        noise_mountain.Seed = (int)GD.Randi();
+        noise_bumps.Seed = (int)GD.Randi();
+        noise_veg.Seed = (int)GD.Randi();
         noiseFall.Seed = (int)GD.Randi();
         ground.EmptyResources();
         base.GenerateTerrain();
@@ -54,19 +127,40 @@ public partial class GroundTerrain : Terrain
     protected override void GenerateVert(int row, int col){
         float steep;
 
+        float veg_noise = Mathf.Clamp(noise_veg.GetNoise2D(row,col)*5f,-1,1);
+        veg_noise = vegSpline.Interpolate(veg_noise);
+
+        float mountain = noise_mountain.GetNoise2D(row,col);
+        float bumps = noise_bumps.GetNoise2D(row,col);
+        float river = noise_river.GetNoise2D(row,col);
+
+
+        GD.Print($"{mountain}, {bumps}, {river}");
+
         Color maskColor = island_mask.GetPixel(row,col);
         float maskHeight = maskColor.R;
-        var noise = Mathf.Abs(noiseGround.GetNoise2D(row,col));
-        steep = Mathf.Pow(noise,1)*GlobalData.HEIGHT;
-        steep *= maskHeight;
-        steep += maskHeight*GlobalData.WATER_LEVEL;
-        steep -= noise < 0.5f ? (1 - noise) * 3 : 0; 
-        steep = terrainSpline.Interpolate(steep);
+        river *= maskHeight;
+        mountain -= 1-maskHeight;
+
+        float mountain_height = mountain_height_spline.Interpolate(mountain);
+        float mountain_bumps = mountain_bumps_spline.Interpolate(mountain);
+        float river_height = river_height_spline.Interpolate(river);
+        float river_bumps = river_bumps_spline.Interpolate(river);
+        float bumps_splined = bumps_spline.Interpolate(bumps);
+
+        steep = mountain_height + river_height + (mountain_bumps * river_bumps * bumps_splined);
+
+        steep *= .2f*GlobalData.HEIGHT;
+
         var vec = new Vector3(row*GlobalData.SCALE, steep*GlobalData.SCALE, col*GlobalData.SCALE);
         verts.Add(vec);
         normals.Add(vec.Normalized());
 
-        ground.AddNewResourceArea(row,col,steep);
+        var resource = ground.AddNewResourceArea(row,col,steep);
+        resource.AddResource("noise_veg",veg_noise);
+        resource.AddResource("noise_mountain",mountain);
+        resource.AddResource("noise_bumps",bumps);
+        resource.AddResource("noise_river",river);
     }
     protected override void Errode(int times){
         if(times <= 0) return;

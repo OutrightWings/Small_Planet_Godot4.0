@@ -4,7 +4,7 @@ public partial class GlobalData : Node{
     public static int DIMENSIONS = 250;
     public static float HEIGHT = 100;
     public static float FLOOR = -5;
-    public static float WATER_LEVEL = 5;
+    public static float WATER_LEVEL = 2;
     public static float SCALE = 0.3f;
     public static int RESOURCE_GRID_WIDTH = DIMENSIONS;
     public static float MAX_WOOD = 10;
