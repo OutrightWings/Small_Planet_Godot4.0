@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public partial class MeshArea : Area3D
 {
-    public ModeSelect modeSelect = ModeSelect.SELECT;
+    private ModeSelect modeSelect = ModeSelect.SELECT;
     GroundManager ground;
     [Export]
     PackedScene temp_object;

@@ -18,12 +18,12 @@ public partial class GroundTerrain : Terrain
 
     public override void _Ready()
     {
-	    noise_mountain = CreateNoise(3,0.5f,2,0.005f);
-        noise_bumps = CreateNoise(3,0.5f,2,0.02f);
-        noise_river = CreateNoise(3,0.5f,2,0.01f);
-        noise_veg = CreateNoise(3,0.5f,2,0.01f);
+	    noise_mountain = CreateNoise(0.005f);
+        noise_bumps = CreateNoise(0.02f);
+        noise_river = CreateNoise(0.01f);
+        noise_veg = CreateNoise(0.01f);
 
-        noiseFall = CreateNoise(3,0.5f,2,0.01f);
+        noiseFall = CreateNoise(0.01f);
         FALL_DISTANCE *= GlobalData.SCALE;
         ground = (GroundManager)GetNode("..");
        
@@ -106,11 +106,9 @@ public partial class GroundTerrain : Terrain
         ((StandardMaterial3D)this.MaterialOverlay).AlbedoTexture = texture;
     }
     #region Mesh Generation
-    public static FastNoiseLite CreateNoise(int octaves, float persistence, float lacunarity, float period){ //(3,0.5f,2,64)
+    public static FastNoiseLite CreateNoise(float frequency){
         var noise = new FastNoiseLite(){
-            FractalOctaves = octaves,
-            FractalLacunarity = lacunarity,
-            Frequency = period
+            Frequency = frequency
         };
         return noise;
     }
@@ -134,8 +132,7 @@ public partial class GroundTerrain : Terrain
         float bumps = noise_bumps.GetNoise2D(row,col);
         float river = noise_river.GetNoise2D(row,col);
 
-
-        GD.Print($"{mountain}, {bumps}, {river}");
+        //GD.Print($"{mountain}, {bumps}, {river}");
 
         Color maskColor = island_mask.GetPixel(row,col);
         float maskHeight = maskColor.R;
@@ -157,10 +154,10 @@ public partial class GroundTerrain : Terrain
         normals.Add(vec.Normalized());
 
         var resource = ground.AddNewResourceArea(row,col,steep);
-        resource.AddResource("noise_veg",veg_noise);
-        resource.AddResource("noise_mountain",mountain);
-        resource.AddResource("noise_bumps",bumps);
-        resource.AddResource("noise_river",river);
+        resource.resourceMap.SetResource("noise_veg",veg_noise);
+        resource.resourceMap.SetResource("noise_mountain",mountain);
+        resource.resourceMap.SetResource("noise_bumps",bumps);
+        resource.resourceMap.SetResource("noise_river",river);
     }
     protected override void Errode(int times){
         if(times <= 0) return;

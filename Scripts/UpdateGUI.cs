@@ -4,22 +4,26 @@ using System.Linq;
 
 public partial class UpdateGUI : Control
 {
-    private Label testTextArea;
+    private Label selected_region_text, harvested_resources_text;
     public override void _Ready(){
-        testTextArea = (Label)GetNode("InfoBox/PanelContainer/Label");
+        selected_region_text = (Label)GetNode("InfoBox/PanelContainer/Label");
+        harvested_resources_text = (Label)GetNode("InfoHarvestedBox/PanelContainer/Label");
     }
     public void PopulateAreaDataInGUI(ResourceArea[] area){
         float wood = 0;
         area.ToList().ForEach( pixel => {
             if(pixel != null){
-                wood += pixel.GetResourceAmount("wood");
+                wood += pixel.resourceMap.GetResourceAmount("wood");
                 //GD.Print($"{pixel.row},{pixel.col}");
             }
         });
         //testTextArea.Text = $"({area.row},{area.col})\n";
-        testTextArea.Text = $"Wood:{wood}\n";
+        selected_region_text.Text = $"Wood:{wood}\n";
+    }
+    public void UpdateHarvestedInfo(){
+
     }
     public void ClearAreaInfo(){
-        testTextArea.Text = "";
+        selected_region_text.Text = "";
     }
 }

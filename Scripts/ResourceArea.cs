@@ -5,7 +5,7 @@ using System.Data;
 
 public partial class ResourceArea : Node
 {
-    private Dictionary<string,float> resourceMap = new();
+    public ResourceMap resourceMap = new();
     public bool isAboveGround = false;
     public int row, col;
     public float height;
@@ -20,20 +20,20 @@ public partial class ResourceArea : Node
             new Vector2(1,1)
         };
         alphaSpline = new Spline(points);
-        AddResource("wood",0);
-		AddResource("plantGrowthRate",GlobalData.BASE_PLANT_GROWTH_RATE);
-        AddResource("alphaVarience",(float)GD.RandRange(0,0.2f));
+        resourceMap.SetResource("wood",0);
+		resourceMap.SetResource("plantGrowthRate",GlobalData.BASE_PLANT_GROWTH_RATE);
+        resourceMap.SetResource("alphaVarience",(float)GD.RandRange(0,0.2f));
     }
     public void GrowResource(ref ResourceArea[] neighbors){
         if(isAboveGround){
-            float wood = GetResourceAmount("wood");
-            float deltaWood = wood * GetResourceAmount("plantGrowthRate") * (1 - (wood / GlobalData.MAX_WOOD));
-            AddToResource("wood",deltaWood);
+            float wood = resourceMap.GetResourceAmount("wood");
+            float deltaWood = wood * resourceMap.GetResourceAmount("plantGrowthRate") * (1 - (wood / GlobalData.MAX_WOOD));
+            resourceMap.AddToResource("wood",deltaWood);
             if(wood >= 0.4f * GlobalData.MAX_WOOD){
                 for(int itr = 1; itr < 8; itr+=2){
                     ResourceArea neighbor = neighbors[itr];
-                    if(neighbor?.GetResourceAmount("wood") == 0){
-                        neighbor.AddToResource("wood",0.01f);
+                    if(neighbor?.resourceMap.GetResourceAmount("wood") == 0){
+                        neighbor.resourceMap.AddToResource("wood",0.01f);
                     }
                 }
             }
@@ -42,28 +42,16 @@ public partial class ResourceArea : Node
     public void DrawTexture(ref Image image){
         if(isAboveGround){
             Color color = Colors.Transparent;
-            float wood = GetResourceAmount("wood");
+            float wood = resourceMap.GetResourceAmount("wood");
             if(wood > 0){
                 color = Colors.DarkGreen;
                 var alpha = wood/GlobalData.MAX_WOOD;
                 alpha = alphaSpline.Interpolate(alpha);
                 color.A = alpha;
-                color = color.Darkened(GetResourceAmount("alphaVarience"));
+                color = color.Darkened(resourceMap.GetResourceAmount("alphaVarience"));
             }
             image.SetPixel(row,col,color);
         }
     }
-    public void AddToResource(string name, float amount){
-        resourceMap[name] += amount;
-        //GD.Print(resourceMap[name]," ", amount);
-        //resourceMap.Add(name,amount);
-    }
-    public float GetResourceAmount(string name){
-        return resourceMap[name];
-    }
-
-    public void AddResource(string name, float amount)
-    {
-        resourceMap.Add(name,amount);
-    }
+    
 }

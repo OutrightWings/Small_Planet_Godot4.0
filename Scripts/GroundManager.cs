@@ -6,6 +6,7 @@ public partial class GroundManager : ResourceManager
 {
 	[Export]
 	public Image biome_image;
+    public ResourceMap harvestedResources = new();
     public override void _Ready()
     {
         base._Ready();
@@ -25,11 +26,11 @@ public partial class GroundManager : ResourceManager
 	public override void CreateMeshImages(){
         for(int row = 0; row < GlobalData.DIMENSIONS; row++){
             for(int col = 0; col < GlobalData.DIMENSIONS; col++){
-                ResourceArea resource = GetResourceArea(row,col);
+                ResourceArea resourceArea = GetResourceArea(row,col);
                 
                 float rand = (float)GD.RandRange(0,0.2f);
 
-                float steep = resource.height;
+                float steep = resourceArea.height;
                 biome_image.SetPixel(row,col,Colors.Transparent);
                 Color c;
                 if(steep <= GlobalData.WATER_LEVEL-3.5){
@@ -39,12 +40,12 @@ public partial class GroundManager : ResourceManager
                      c = Colors.Tan;
                 }
                 else if(steep <= GlobalData.HEIGHT/5f){
-                    resource.isAboveGround = true;
+                    resourceArea.isAboveGround = true;
                      c = Colors.DarkGoldenrod;
-                     float veg_noise  = resource.GetResourceAmount("noise_veg");
+                     float veg_noise  = resourceArea.resourceMap.GetResourceAmount("noise_veg");
                     if(veg_noise > 0){
-                        resource.AddToResource("wood",(int)(veg_noise * GlobalData.MAX_WOOD));
-                        resource.DrawTexture(ref biome_image);
+                        resourceArea.resourceMap.AddToResource("wood",(int)(veg_noise * GlobalData.MAX_WOOD));
+                        resourceArea.DrawTexture(ref biome_image);
                     }
                 }
                 else if(steep <= GlobalData.HEIGHT/3f){
@@ -56,8 +57,8 @@ public partial class GroundManager : ResourceManager
                 else{
                      c = Colors.Black;
                 }
-                var river = resource.GetResourceAmount("noise_river");
-                var mountain = resource.GetResourceAmount("noise_mountain");
+                var river = resourceArea.resourceMap.GetResourceAmount("noise_river");
+                var mountain = resourceArea.resourceMap.GetResourceAmount("noise_mountain");
                 //RIVER TEST: INTERIM VALUES
                 if(Mathf.Abs(river)+0.1f*(1-Mathf.Abs(mountain)) <= .1f){
                     c = Colors.BlueViolet;
