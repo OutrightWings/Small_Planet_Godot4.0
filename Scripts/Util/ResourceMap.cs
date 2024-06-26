@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
+using Godot;
 
-public class ResourceMap
+public partial class ResourceMap : Node
 {
     private Dictionary<string,float> resourceMap = new();
     public void AddToResource(string name, float amount){
@@ -24,5 +26,14 @@ public class ResourceMap
     private void AddResource(string name, float amount)
     {
         resourceMap.Add(name,amount);
+    }
+
+    public override string ToString()
+    {
+        string str = "";
+        foreach(var pair in resourceMap){
+            str += $"{pair.Key}: {pair.Value}\n";
+        }
+        return str;
     }
 }

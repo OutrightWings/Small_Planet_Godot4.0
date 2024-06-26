@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bmxpyqggahhmb"]
 
-[ext_resource type="Script" path="res://Scripts/SliderControl.cs" id="1"]
+[ext_resource type="Script" path="res://Scripts/GUI/SliderControl.cs" id="1"]
 
 [node name="VBoxContainer" type="VBoxContainer"]
 script = ExtResource("1")

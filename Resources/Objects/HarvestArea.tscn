@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://devgyy42501d"]
 
-[ext_resource type="Script" path="res://Resources/Objects/HarvestArea.cs" id="1_osete"]
+[ext_resource type="Script" path="res://Scripts/Resources/HarvestArea.cs" id="1_osete"]
 [ext_resource type="Shader" path="res://Scripts/Shaders/decal.gdshader" id="2_yk5x1"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2ft5o"]

@@ -20,8 +20,8 @@ public partial class UpdateGUI : Control
         //testTextArea.Text = $"({area.row},{area.col})\n";
         selected_region_text.Text = $"Wood:{wood}\n";
     }
-    public void UpdateHarvestedInfo(){
-
+    public void UpdateHarvestedInfo(ResourceMap resources){
+        harvested_resources_text.Text = resources.ToString();
     }
     public void ClearAreaInfo(){
         selected_region_text.Text = "";

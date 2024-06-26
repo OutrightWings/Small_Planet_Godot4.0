@@ -14,6 +14,8 @@ public abstract partial class ResourceManager : Node3D
     public delegate void UpdateResourcesEventHandler();
 	[Signal]
     public delegate void EmitSelectedResourcesEventHandler(ResourceArea[] areas);
+	[Signal]
+    public delegate void EmitHarvestedResourcesEventHandler(ResourceMap resources);
 
     #region Getters/Setters
     //Takes unscaled pos, returns unscaled
@@ -31,14 +33,14 @@ public abstract partial class ResourceManager : Node3D
 		return GetResourceArea(row,col);
 	}
 	public void AddResourceToSection(int row, int col, string name, float amount){
-        GetResourceArea(row,col).AddToResource(name,amount);
+        GetResourceArea(row,col).resourceMap.AddToResource(name,amount);
 	}
 	public ResourceArea GetResourceArea(int row, int col){
 		int index = GlobalData.Index(row,col);
 		return resources[index];
 	}
 	public float GetResourceAmount(int row, int col, string name){
-		return GetResourceArea(row,col).GetResourceAmount(name);
+		return GetResourceArea(row,col).resourceMap.GetResourceAmount(name);
 	}
 	public ResourceArea[] GetNeighbors(int selected_row, int selected_col,int radious){
 		int dimension = radious*2+1;

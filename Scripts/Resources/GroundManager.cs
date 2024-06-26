@@ -22,6 +22,7 @@ public partial class GroundManager : ResourceManager
             }
         }
         EmitSignal("UpdateOverlayImage",biome_image);
+        EmitSignal("EmitHarvestedResources",harvestedResources);
     }
 	public override void CreateMeshImages(){
         for(int row = 0; row < GlobalData.DIMENSIONS; row++){
