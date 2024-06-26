@@ -14,8 +14,6 @@ public partial class GlobalData : Node{
     #endregion
     #region Signals
     [Signal]
-    public delegate void ReloadEventHandler();
-    [Signal]
     public delegate void ClockEventHandler();
     #endregion
     #region Ready
@@ -32,12 +30,6 @@ public partial class GlobalData : Node{
         EmitSignal("Clock");
     }
     #endregion
-    public override void _Process(double delta)
-    {
-        if(Input.IsActionJustPressed("Reload")){
-           EmitSignal("Reload");
-        }
-    }
     
     #region Util
     public static int Index(int row, int col){

@@ -48,7 +48,6 @@ public abstract partial class Terrain : MeshInstance3D
         surfaceArray[(int)Mesh.ArrayType.Index] = indices.ToArray();
         ((ArrayMesh)this.Mesh).AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, surfaceArray);
         EmitSignal("CreateImages");
-        
     }
     public void UpdateBaseTexture(Image image){
         var texture =  ImageTexture.CreateFromImage(image);

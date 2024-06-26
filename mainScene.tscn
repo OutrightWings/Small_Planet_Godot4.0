@@ -4,6 +4,7 @@
 [ext_resource type="ArrayMesh" uid="uid://5j7jc16sksve" path="res://Resources/Models/LowPolyPineSharp.obj" id="2_7mxbg"]
 [ext_resource type="Shader" path="res://Scripts/Shaders/decal.gdshader" id="2_euxyd"]
 [ext_resource type="Script" path="res://Scripts/SelectionMarker.cs" id="2_jl53q"]
+[ext_resource type="Script" path="res://Scripts/InputManager.cs" id="2_p1t45"]
 [ext_resource type="Script" path="res://Scripts/CameraController.cs" id="2_ump7p"]
 [ext_resource type="ArrayMesh" uid="uid://byp1jlvkmj5wv" path="res://Resources/Models/meshwater.tres" id="3_kvyxr"]
 [ext_resource type="Shader" path="res://Scripts/Shaders/treeShader.gdshader" id="3_o21ac"]
@@ -14,7 +15,6 @@
 [ext_resource type="Script" path="res://Scripts/Mesh/TreeMesh.cs" id="6_5rof8"]
 [ext_resource type="Script" path="res://Scripts/Mesh/GroundTerrain.cs" id="6_44kux"]
 [ext_resource type="Image" uid="uid://c2chtd6x4lg2u" path="res://Resources/Textures/island_mask.png" id="8_a88og"]
-[ext_resource type="Script" path="res://Scripts/Mesh/MeshArea.cs" id="9_ia2hb"]
 [ext_resource type="Script" path="res://Scripts/Resources/WaterManager.cs" id="9_lgitg"]
 [ext_resource type="PackedScene" uid="uid://bmxpyqggahhmb" path="res://Resources/Objects/MainMenuScene.tscn" id="10_ub5hc"]
 [ext_resource type="Script" path="res://Scripts/GUI/UpdateGUI.cs" id="11_r1cvc"]
@@ -109,6 +109,11 @@ texture_filter = 0
 [node name="Root" type="Node3D"]
 script = ExtResource("1_nbjva")
 
+[node name="InputManager" type="Node3D" parent="."]
+script = ExtResource("2_p1t45")
+temp_object = ExtResource("19_20nt4")
+resourceCollectionRegion = ExtResource("20_car8h")
+
 [node name="SelectionMarker" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 10, 0, 0, 0, 1, 0, 0, -5)
 script = ExtResource("2_jl53q")
@@ -167,9 +172,6 @@ island_mask = ExtResource("8_a88og")
 
 [node name="Area" type="Area3D" parent="Ground/GroundMesh"]
 monitorable = false
-script = ExtResource("9_ia2hb")
-temp_object = ExtResource("19_20nt4")
-resourceCollectionRegion = ExtResource("20_car8h")
 
 [node name="CollisionShape" type="CollisionShape3D" parent="Ground/GroundMesh/Area"]
 shape = SubResource("ConcavePolygonShape3D_x3w87")
@@ -277,14 +279,28 @@ script = ExtResource("22_6jk6g")
 selection = 1
 
 [connection signal="Clock" from="." to="Timer" method="start"]
-[connection signal="Reload" from="." to="." method="GenerateMeshes"]
+[connection signal="AreaDeSelected" from="InputManager" to="SelectionMarker" method="DisableMarker"]
+[connection signal="AreaDeSelected" from="InputManager" to="Control" method="ClearAreaInfo"]
+[connection signal="AreaSelected" from="InputManager" to="Ground" method="SelectedResource"]
+[connection signal="CameraRotation" from="InputManager" to="Camera_Rotate/Camera_Zoom/Camera3D" method="UpdateRotation"]
+[connection signal="CameraVelocity" from="InputManager" to="Camera_Rotate/Camera_Zoom/Camera3D" method="UpdateVelocity"]
+[connection signal="Reload" from="InputManager" to="." method="GenerateMeshes"]
 [connection signal="timeout" from="Timer" to="TreesMesh" method="Update"]
 [connection signal="timeout" from="Timer" to="Water" method="UpdateTick"]
 [connection signal="timeout" from="Timer" to="Ground" method="UpdateTick"]
-[connection signal="input_event" from="Ground/GroundMesh/Area" to="Ground/GroundMesh/Area" method="OnAreaInputEvent"]
-[connection signal="UpdateMode" from="Control/Tools/PanelContainer/TabContainer/Harvesting/SelectButton" to="Ground/GroundMesh/Area" method="SetSelectionMode"]
+[connection signal="UpdateBaseImage" from="Water" to="Water/WaterMesh" method="UpdateBaseTexture"]
+[connection signal="CreateImages" from="Water/WaterMesh" to="Water" method="CreateMeshImages"]
+[connection signal="EmitHarvestedResources" from="Ground" to="Control" method="UpdateHarvestedInfo"]
+[connection signal="EmitSelectedResources" from="Ground" to="SelectionMarker" method="MoveMarker"]
+[connection signal="EmitSelectedResources" from="Ground" to="Control" method="PopulateAreaDataInGUI"]
+[connection signal="UpdateBaseImage" from="Ground" to="Ground/GroundMesh" method="UpdateBaseTexture"]
+[connection signal="UpdateOverlayImage" from="Ground" to="Ground/GroundMesh" method="UpdateOverlayTexture"]
+[connection signal="UpdateResources" from="Ground" to="TreesMesh" method="SetTreePositions"]
+[connection signal="CreateImages" from="Ground/GroundMesh" to="Ground" method="CreateMeshImages"]
+[connection signal="input_event" from="Ground/GroundMesh/Area" to="InputManager" method="MeshClicked"]
+[connection signal="UpdateMode" from="Control/Tools/PanelContainer/TabContainer/Harvesting/SelectButton" to="InputManager" method="SetSelectionMode"]
 [connection signal="pressed" from="Control/Tools/PanelContainer/TabContainer/Harvesting/SelectButton" to="Control/Tools/PanelContainer/TabContainer/Harvesting/SelectButton" method="OnClick"]
-[connection signal="UpdateMode" from="Control/Tools/PanelContainer/TabContainer/Harvesting/HarvestWoodButton" to="Ground/GroundMesh/Area" method="SetSelectionMode"]
+[connection signal="UpdateMode" from="Control/Tools/PanelContainer/TabContainer/Harvesting/HarvestWoodButton" to="InputManager" method="SetSelectionMode"]
 [connection signal="pressed" from="Control/Tools/PanelContainer/TabContainer/Harvesting/HarvestWoodButton" to="Control/Tools/PanelContainer/TabContainer/Harvesting/HarvestWoodButton" method="OnClick"]
-[connection signal="UpdateMode" from="Control/Tools/PanelContainer/TabContainer/Building/BuildingButton" to="Ground/GroundMesh/Area" method="SetSelectionMode"]
+[connection signal="UpdateMode" from="Control/Tools/PanelContainer/TabContainer/Building/BuildingButton" to="InputManager" method="SetSelectionMode"]
 [connection signal="pressed" from="Control/Tools/PanelContainer/TabContainer/Building/BuildingButton" to="Control/Tools/PanelContainer/TabContainer/Building/BuildingButton" method="OnClick"]
